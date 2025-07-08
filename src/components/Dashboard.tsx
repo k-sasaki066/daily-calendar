@@ -3,6 +3,7 @@
 
 import DateCard from '@/components/DateCard'
 import AnalogClock from '@/components/AnalogClock'
+import AnniversaryCard from '@/components/AnniversaryCard'
 import { useEffect } from 'react'
 
 export default function Dashboard() {
@@ -35,6 +36,7 @@ export default function Dashboard() {
             {/* コンテンツ本体 */}
             <div className="relative z-10 lg:w-[800px] flex flex-col gap-6 items-center">
                 <DateCard />
+                <AnniversaryCard />
                 <AnalogClock />
             </div>
         </div>
