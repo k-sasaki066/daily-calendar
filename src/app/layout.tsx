@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 // TailwindのスタイルやリセットCSSのために必要
 import "./globals.css";
-import Header from '@/components/Header';
+import Header from '@/components/common/Header';
 
 // Google Fonts 経由でWebフォントを読み込んでいる
 const geistSans = Geist({
