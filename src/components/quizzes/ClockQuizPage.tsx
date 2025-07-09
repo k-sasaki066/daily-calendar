@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Clock from "@/components/Clock";
+import Clock from "@/components/quizzes/Clock";
 
 type Time = { hour: number; minute: number };
 
@@ -17,6 +17,7 @@ const formatTime = (t: Time): string =>
 const TOTAL_QUESTIONS = 10;
 
 export default function QuizPage() {
+    const [mounted, setMounted] = useState(false);
     const [question, setQuestion] = useState<Time>({ hour: 3, minute: 15 });
     const [choices, setChoices] = useState<Time[]>([]);
     const [selected, setSelected] = useState<Time | null>(null);
@@ -24,6 +25,13 @@ export default function QuizPage() {
     const [questionCount, setQuestionCount] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
+
+    useEffect(() => {
+        // 初回問題作成
+        setMounted(true);
+        generateQuestion();
+        setQuestionCount(1);
+    }, []);
 
     const generateQuestion = () => {
         const q = getRandomTime();
@@ -39,12 +47,6 @@ export default function QuizPage() {
         setSelected(null);
         setShowResult(false);
     };
-
-    useEffect(() => {
-        // 初回問題作成
-        generateQuestion();
-        setQuestionCount(1);
-    }, []);
 
     const shuffleArray = <T,>(arr: T[]): T[] =>
         [...arr].sort(() => Math.random() - 0.5);
@@ -68,6 +70,8 @@ export default function QuizPage() {
         setQuestionCount((prev) => prev + 1);
         }
     };
+
+    if (!mounted) return null;
 
     if (quizFinished) {
         return (

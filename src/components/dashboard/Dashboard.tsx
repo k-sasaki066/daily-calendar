@@ -1,10 +1,10 @@
 // useEffect を使うなら 'use client' 化が必要
 'use client';
 
-import DateCard from '@/components/DateCard';
-import AnalogClock from '@/components/AnalogClock';
-import AnniversaryCard from '@/components/AnniversaryCard';
-import WeatherCard from '@/components/WeatherCard';
+import DateCard from '@/components/dashboard/DateCard';
+import AnalogClock from '@/components/dashboard/AnalogClock';
+import AnniversaryCard from '@/components/dashboard/AnniversaryCard';
+import WeatherCard from '@/components/dashboard/WeatherCard';
 import { useEffect } from 'react';
 
 export default function Dashboard() {
