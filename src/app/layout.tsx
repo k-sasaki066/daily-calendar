@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 // TailwindのスタイルやリセットCSSのために必要
 import "./globals.css";
+import Header from '@/components/Header';
 
 // Google Fonts 経由でWebフォントを読み込んでいる
 const geistSans = Geist({
@@ -31,7 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-800`}
       >
-        <main className="h-screen flex flex-col items-center justify-center">
+        <Header />
+        <main className="flex flex-col items-center justify-center">
           {children}
         </main>
       </body>

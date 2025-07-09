@@ -30,7 +30,7 @@ export default function Dashboard() {
     }, [monthName]);
 
     return (
-        <div className="relative min-w-screen min-h-screen flex justify-center items-center">
+        <div className="relative min-w-screen min-h-[calc(100vh-64px)] flex justify-center items-center">
             {/* 背景を透かすオーバーレイ */}
             <div className="absolute inset-0 bg-white/40 backdrop-brightness-90 z-0" />
 
