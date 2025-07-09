@@ -78,13 +78,13 @@ export default function KanjiQuizPage() {
             onClick={() => setMode("reading")}
             className="bg-blue-500 text-white px-4 py-2 rounded m-4 text-3xl"
             >
-            読みクイズ
+            読み
             </button>
             <button
             onClick={() => setMode("writing")}
             className="bg-green-500 text-white px-4 py-2 rounded m-4 text-3xl"
             >
-            書きクイズ
+            書き
             </button>
         </div>
         );
@@ -139,7 +139,7 @@ export default function KanjiQuizPage() {
                     key={i}
                     onClick={() => handleAnswer(choice!)}
                     disabled={showResult}
-                    className={`px-4 py-2 rounded border w-40 ${
+                    className={`px-4 py-2 rounded border w-60 ${
                     showResult
                         ? choice === quiz.正解
                         ? "bg-green-400"
