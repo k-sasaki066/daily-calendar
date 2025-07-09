@@ -9,7 +9,7 @@ export default function Header() {
                 Dairy-Calendar
             </Link>
             <Link href="/quiz" className=" hover:underline">
-                漢字クイズ
+                クイズ
             </Link>
         </header>
     );
