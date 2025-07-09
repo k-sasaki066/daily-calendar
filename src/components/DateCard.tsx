@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+type DateInfo = {
+    month: string;
+    day: number;
+    weekday: string;
+};
+
 const DateCard = () => {
-    const [dateInfo, setDateInfo] = useState({
+    const [dateInfo, setDateInfo] = useState<DateInfo>({
         month: "",
         day: 0,
         weekday: "",
