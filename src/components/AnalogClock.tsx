@@ -15,12 +15,12 @@ export default function AnalogClock() {
 
     if (!time) return null;
 
-    const seconds = time.getSeconds();
-    const minutes = time.getMinutes();
-    const hours = time.getHours() % 12 + minutes / 60;
+    const seconds: number = time.getSeconds();
+    const minutes: number = time.getMinutes();
+    const hours: number = time.getHours() % 12 + minutes / 60;
 
-    const numbers = Array.from({ length: 12 }, (_, i) => i + 1);
-    const ticks = Array.from({ length: 60 }, (_, i) => i);
+    const numbers: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
+    const ticks: number[] = Array.from({ length: 60 }, (_, i) => i);
 
     return (
         <div className="relative w-60 h-60 rounded-full bg-white shadow-md border border-gray-500/50">
