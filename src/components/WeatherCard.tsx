@@ -53,7 +53,7 @@ export default function WeatherWidget() {
     const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
 
     return (
-        <div className="text-center p-4 bg-white rounded-md w-full">
+        <div className="text-center p-4 bg-violet-300/60 rounded-md w-full">
             <p className="text-3xl font-bold">現在: {weather.weather[0].description}</p>
             <p className="text-3xl font-bold">気温: {weather.main.temp.toFixed(1)}℃</p>
             <img src={iconUrl} alt={weather.weather[0].description} className="mx-auto w-40 h-40" />
