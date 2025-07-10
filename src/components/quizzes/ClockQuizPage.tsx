@@ -107,8 +107,14 @@ export default function QuizPage() {
             <button
                 key={idx}
                 onClick={() => handleSelect(choice)}
-                className="border rounded px-4 py-2 hover:bg-blue-100 text-2xl"
                 disabled={showResult}
+                className={`border rounded px-4 py-2 text-2xl
+                ${showResult && choice.hour === question.hour && choice.minute === question.minute
+                    ? 'bg-green-200'
+                    : showResult && selected?.hour === choice.hour && selected?.minute === choice.minute
+                    ? 'bg-red-200'
+                    : 'hover:bg-blue-100'
+                }`}
             >
                 {formatTime(choice)}
             </button>
