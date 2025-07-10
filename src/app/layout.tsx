@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 // TailwindのスタイルやリセットCSSのために必要
 import "./globals.css";
 import Header from '@/components/common/Header';
+import { AuthProvider } from '@/context/AuthContext';
 
 // Google Fonts 経由でWebフォントを読み込んでいる
 const geistSans = Geist({
@@ -32,10 +33,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-800`}
       >
-        <Header />
-        <main className="flex flex-col items-center justify-center">
-          {children}
-        </main>
+        <AuthProvider>
+          <Header />
+          <main className="flex flex-col items-center justify-center">
+              {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );

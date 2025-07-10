@@ -2,6 +2,7 @@
 
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,7 +15,9 @@ const firebaseConfig = {
 
 // すでに初期化された Firebase アプリがあるかどうかを確認
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // 他のファイルで Firestore を使うために db を外部公開
-export { db };
+export { db, auth };

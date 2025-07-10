@@ -1,6 +1,9 @@
-import Link from "next/link";
+'use client';
 
-export default function QuizSelectorPage() {
+import Link from "next/link";
+import { withAuth } from '@/components/common/WithAuth';
+
+function QuizSelectorPage() {
     return (
         <div className="text-center mt-20 p-6 text-3xl space-y-8">
             <h1 className="text-3xl">クイズを選んでください</h1>
@@ -18,3 +21,5 @@ export default function QuizSelectorPage() {
         </div>
     );
 }
+
+export default withAuth(QuizSelectorPage);
