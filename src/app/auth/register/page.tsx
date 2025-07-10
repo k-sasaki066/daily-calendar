@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { signUp } from '@/lib/firebaseAuth';
 import { useRouter } from 'next/navigation';
+import SubmitButton from '@/components/common/SubmitButton';
 
 type FormData = {
     username: string;
@@ -38,7 +39,7 @@ export default function RegisterPage() {
     return (
     <div className="w-[600px] mx-auto mt-30 p-6 border rounded">
         <h1 className="text-2xl mb-4 text-center">新規登録</h1>
-
+        <form onSubmit={handleSubmit(onSubmit)}>
         <input
             {...register('username')}
             type="text"
@@ -63,13 +64,12 @@ export default function RegisterPage() {
         />
         {errors.password && <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>}
 
-        <button
-            onClick={handleSubmit(onSubmit)}
-            disabled={isSubmitting}
+        <SubmitButton isSubmitting={isSubmitting}
             className="w-full bg-blue-500 text-white p-2 mt-6 rounded hover:bg-blue-600"
         >
             登録
-        </button>
+        </SubmitButton>
+        </form>
     </div>
     );
 }
