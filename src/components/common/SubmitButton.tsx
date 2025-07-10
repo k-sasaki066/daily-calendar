@@ -6,9 +6,10 @@ type Props = {
     isSubmitting: boolean;
     children: React.ReactNode;
     className?: string;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export default function SubmitButton({ isSubmitting, children }: Props) {
+export default function SubmitButton({ isSubmitting, children, className, onClick }: Props) {
     return (
         <button
         type="submit"

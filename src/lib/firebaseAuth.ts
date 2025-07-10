@@ -3,6 +3,8 @@ import {
     signInWithEmailAndPassword,
     signOut,
     updateProfile,
+    sendEmailVerification,
+    sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -13,15 +15,23 @@ export const signUp = async (email: string, password: string, username: string) 
     // ユーザー名（displayName）を設定
     await updateProfile(user, { displayName: username });
 
+    await sendEmailVerification(user);
+
     return user;
 };
 
 export const signIn = async (email: string, password: string) => {
     return await signInWithEmailAndPassword(auth, email, password);
 };
+// signIn 関数は UserCredential を返すので、user を使って emailVerified を確認できます
+
 
 export const signOutUser = async () => {
     return await signOut(auth);
+};
+
+export const resetPassword = async (email: string) => {
+    return await sendPasswordResetEmail(auth, email);
 };
 
 // 認証済みのユーザーは user.getIdToken() メソッドを持っており、これを使って Firebase ID トークンを取得できます。Firebase Auth は内部的にIDトークン（JWT）を使って認証状態を管理している

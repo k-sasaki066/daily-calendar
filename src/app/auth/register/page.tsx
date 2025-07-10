@@ -30,7 +30,7 @@ export default function RegisterPage() {
         try {
         await signUp(data.email, data.password, data.username);
             alert('登録に成功しました！');
-            router.push('/');
+            router.push('/auth/verify-email');
         } catch (error: any) {
         alert(error.message);
         }

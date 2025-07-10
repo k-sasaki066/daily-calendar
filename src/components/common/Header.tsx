@@ -40,63 +40,69 @@ export default function Header() {
             {loading ? (
                 <p className="text-sm">読み込み中...</p>
             ) : user ? (
+                user.emailVerified ? (
                 <div className="relative" ref={menuRef}>
-                <button
+                    <button
                     onClick={() => setMenuOpen(!menuOpen)}
                     className="hover:underline focus:outline-none"
                     aria-haspopup="true"
                     aria-expanded={menuOpen}
-                >
+                    >
                     {user.displayName ? `${user.displayName}さん` : user.email} ▼
-                </button>
+                    </button>
 
-                <AnimatePresence>
+                    <AnimatePresence>
                     {menuOpen && (
-                    <motion.ul
+                        <motion.ul
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
                         className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-10"
-                    >
+                        >
                         <li>
                             <Link
-                                href="/quiz"
-                                className="block px-4 py-2 hover:bg-gray-200"
-                                onClick={() => setMenuOpen(false)}
+                            href="/quiz"
+                            className="block px-4 py-2 hover:bg-gray-200"
+                            onClick={() => setMenuOpen(false)}
                             >
-                                クイズ
+                            クイズ
                             </Link>
                         </li>
-                        
                         <li>
                             <Link
-                                href="/calendar"
-                                className="block px-4 py-2 hover:bg-gray-200"
-                                onClick={() => setMenuOpen(false)}
+                            href="/calendar"
+                            className="block px-4 py-2 hover:bg-gray-200"
+                            onClick={() => setMenuOpen(false)}
                             >
-                                カレンダー
+                            カレンダー
                             </Link>
                         </li>
-                        
                         <li>
                             <button
-                                onClick={handleLogout}
-                                className="w-full text-left px-4 py-2 hover:bg-gray-200"
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-200"
                             >
-                                ログアウト
+                            ログアウト
                             </button>
                         </li>
-                    </motion.ul>
+                        </motion.ul>
                     )}
-                </AnimatePresence>
+                    </AnimatePresence>
                 </div>
+                ) : (
+                <div className="flex items-center gap-4">
+                    <p className="text-yellow-200">メール確認待ち</p>
+                    <button onClick={handleLogout} className="hover:underline">
+                    ログアウト
+                    </button>
+                </div>
+                )
             ) : (
                 <div className="flex gap-4">
                     <Link href="/auth/register" className="hover:underline">
                         登録
                     </Link>
-                    
                     <Link href="/auth/login" className="hover:underline">
                         ログイン
                     </Link>

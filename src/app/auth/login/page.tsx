@@ -1,5 +1,6 @@
 'use client';
 
+import Link from "next/link";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -28,10 +29,20 @@ export default function LoginPage() {
 
     const onSubmit = async (data: FormData) => {
         try {
-            await signIn(data.email, data.password);
-                alert('ログイン成功');
-                router.push('/');
-            } catch (error: any) {
+            const userCredential = await signIn(data.email, data.password);
+            const user = userCredential.user;
+
+            // メール確認済みかチェック
+            if (!user.emailVerified) {
+                alert('メールアドレスが確認されていません。メールを確認してください。');
+                // 必要に応じて確認ページに遷移
+                router.push('/auth/verify-email');
+            return;
+            }
+
+            alert('ログイン成功');
+            router.push('/');
+        } catch (error: any) {
             if (error.code === 'auth/user-not-found') {
                 setError('email', { type: 'manual', message: '登録されていないメールアドレスです。' });
             } else if (error.code === 'auth/wrong-password') {
@@ -45,7 +56,7 @@ export default function LoginPage() {
     };
 
     return (
-    <div className="w-[600px] mx-auto mt-30 p-6 border rounded">
+    <div className="w-[600px] mx-auto mt-30 p-6 border rounded text-center">
         <h1 className="text-2xl mb-4 text-center">ログイン</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <input
@@ -70,6 +81,9 @@ export default function LoginPage() {
             ログイン
             </SubmitButton>
         </form>
+        <Link href="/auth/reset-password" className="inline-block text-blue-600 hover:underline text-sm mt-4">
+            パスワードを忘れた方はこちら
+        </Link>
     </div>
     );
 }
