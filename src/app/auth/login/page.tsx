@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { signIn } from '@/lib/firebaseAuth';
 import { useRouter } from 'next/navigation';
+import SubmitButton from '@/components/common/SubmitButton';
 
 type FormData = {
     email: string;
@@ -63,13 +64,11 @@ export default function LoginPage() {
             />
             {errors.password && <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>}
 
-            <button
-            type="submit"
-            disabled={isSubmitting}
+            <SubmitButton isSubmitting={isSubmitting}
             className="w-full bg-blue-500 text-white p-2 mt-6 rounded hover:bg-blue-600 disabled:opacity-50"
             >
             ログイン
-            </button>
+            </SubmitButton>
         </form>
     </div>
     );
