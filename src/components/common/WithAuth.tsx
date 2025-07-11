@@ -10,13 +10,21 @@ export const withAuth = (Component: React.ComponentType) => {
         const router = useRouter();
 
         useEffect(() => {
-            if (!loading && !user) {
-                router.push('/auth/login');
+            if (!loading) {
+                if (!user) {
+                    router.push('/auth/login');
+                } else if (!user.emailVerified) {
+                    router.push('/auth/verify-email'); // メール未確認ユーザー向けのページへ
+                }
             }
         }, [user, loading]);
 
-        if (loading || !user) {
-            return <p className="text-center mt-20">読み込み中...</p>;
+        if (loading || !user || !user.emailVerified) {
+            return (
+                <div className="flex items-center justify-center min-h-screen">
+                    <p className="text-gray-600 text-2xl">読み込み中...</p>
+                </div>
+            );
         }
 
         return <Component {...props} />;
