@@ -7,12 +7,14 @@ type Props = {
     children: React.ReactNode;
     className?: string;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    type?: 'button' | 'submit' | 'reset';
 };
 
-export default function SubmitButton({ isSubmitting, children, className, onClick }: Props) {
+export default function SubmitButton({ isSubmitting, children, className, onClick, type = 'button' }: Props) {
     return (
         <button
-        type="submit"
+        type={type}
+        onClick={onClick}
         disabled={isSubmitting}
         className={`w-full text-white p-2 rounded flex justify-center items-center gap-2 transition ${
             isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'

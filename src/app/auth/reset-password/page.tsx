@@ -47,8 +47,10 @@ export default function ResetPasswordPage() {
             />
             {errors.email && <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>}
 
-            <SubmitButton isSubmitting={isSubmitting}
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:opacity-50 mt-6"
+            <SubmitButton
+                type="submit"
+                isSubmitting={isSubmitting}
+                className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:opacity-50 mt-6"
             >
             送信
             </SubmitButton>

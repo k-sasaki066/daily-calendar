@@ -75,8 +75,9 @@ export default function LoginPage() {
             />
             {errors.password && <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>}
 
-            <SubmitButton isSubmitting={isSubmitting}
-            className="w-full bg-blue-500 text-white p-2 mt-6 rounded hover:bg-blue-600 disabled:opacity-50"
+            <SubmitButton
+                isSubmitting={isSubmitting} type='submit'
+                className="w-full bg-blue-500 text-white p-2 mt-6 rounded hover:bg-blue-600 disabled:opacity-50"
             >
             ログイン
             </SubmitButton>
