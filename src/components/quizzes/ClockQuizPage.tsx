@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import Clock from "@/components/quizzes/Clock";
 
@@ -17,6 +18,8 @@ const formatTime = (t: Time): string =>
 const TOTAL_QUESTIONS = 10;
 
 export default function QuizPage() {
+    const router = useRouter();
+
     const [mounted, setMounted] = useState(false);
     const [question, setQuestion] = useState<Time>({ hour: 3, minute: 15 });
     const [choices, setChoices] = useState<Time[]>([]);
@@ -81,7 +84,7 @@ export default function QuizPage() {
             正解数: {correctCount} / {TOTAL_QUESTIONS}
             </p>
             <button
-            className="mt-8 bg-blue-500 text-white rounded px-6 py-2 text-2xl hover:bg-blue-600"
+            className="mt-8 bg-blue-500 text-white rounded px-6 py-2 text-2xl hover:bg-blue-600 active:bg-blue-700 transform hover:scale-105 transition-transform duration-200"
             onClick={() => {
                 // リセットして再スタート
                 setCorrectCount(0);
@@ -98,44 +101,56 @@ export default function QuizPage() {
 
     return (
         <div className="text-center p-8 mt-8 flex flex-col items-center">
-        <h1 className="text-2xl mb-10 mx-auto">
-            {questionCount} / {TOTAL_QUESTIONS} 問目 この時計は何時？
-        </h1>
-        <Clock hour={question.hour} minute={question.minute} />
-        <div className="mt-8 flex gap-4">
-            {choices.map((choice, idx) => (
-            <button
-                key={idx}
-                onClick={() => handleSelect(choice)}
-                disabled={showResult}
-                className={`border rounded px-4 py-2 text-2xl
-                ${showResult && choice.hour === question.hour && choice.minute === question.minute
-                    ? 'bg-green-200'
-                    : showResult && selected?.hour === choice.hour && selected?.minute === choice.minute
-                    ? 'bg-red-200'
-                    : 'hover:bg-blue-100'
-                }`}
-            >
-                {formatTime(choice)}
-            </button>
-            ))}
-        </div>
-
-        {showResult && (
-            <>
-            <p className="mt-8 text-3xl">
-                {selected?.hour === question.hour && selected?.minute === question.minute
-                ? "⭕️正解！"
-                : `❌不正解！正解は ${formatTime(question)} です`}
+            <p className="text-2xl mb-3 mx-auto">
+                {questionCount} / {TOTAL_QUESTIONS} 問目
             </p>
-            <button
-                onClick={handleNext}
-                className="mt-6 bg-blue-500 text-white rounded px-6 py-2 text-xl hover:bg-blue-600"
-            >
-                {questionCount >= TOTAL_QUESTIONS ? "結果を見る" : "次の問題へ"}
-            </button>
-            </>
-        )}
+            <h2 className="text-3xl mb-6 mx-auto">
+                この時計は何時？
+            </h2>
+            <Clock hour={question.hour} minute={question.minute} />
+            <div className="mt-8 flex gap-4">
+                {choices.map((choice, idx) => (
+                <button
+                    key={idx}
+                    onClick={() => handleSelect(choice)}
+                    disabled={showResult}
+                    className={`border rounded px-4 py-2 text-2xl
+                    ${showResult && choice.hour === question.hour && choice.minute === question.minute
+                        ? 'bg-green-200'
+                        : showResult && selected?.hour === choice.hour && selected?.minute === choice.minute
+                        ? 'bg-red-200'
+                        : 'hover:bg-blue-100'
+                    }`}
+                >
+                    {formatTime(choice)}
+                </button>
+                ))}
+            </div>
+
+            {showResult && (
+                <>
+                <p className="mt-8 text-3xl">
+                    {selected?.hour === question.hour && selected?.minute === question.minute
+                    ? "⭕️正解！"
+                    : `❌不正解！正解は ${formatTime(question)} です`}
+                </p>
+                <button
+                    onClick={handleNext}
+                    className="mt-6 bg-blue-500 text-white rounded px-6 py-2 text-2xl hover:bg-blue-600 active:bg-blue-700 transform hover:scale-105 transition-transform duration-200"
+                >
+                    {questionCount >= TOTAL_QUESTIONS ? "結果を見る" : "次の問題へ"}
+                </button>
+                </>
+            )}
+            
+            <div className="fixed bottom-10 right-[50%] translate-x-[50%]">
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    クイズをやめる
+                </button>
+            </div>
         </div>
     );
 }
