@@ -1,12 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { signIn } from '@/lib/firebaseAuth';
 import { useRouter } from 'next/navigation';
 import SubmitButton from '@/components/common/SubmitButton';
+import PasswordInput from '@/components/common/PasswordInput';
 
 type FormData = {
     email: string;
@@ -21,7 +22,12 @@ const schema = yup.object({
 export default function LoginPage() {
     const router = useRouter();
 
-    const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<FormData>({
+    const {
+        register,
+        handleSubmit,
+        setError,
+        control,
+        formState: { errors, isSubmitting } } = useForm<FormData>({
         resolver: yupResolver(schema),
         mode: 'onChange',
     });
@@ -57,7 +63,7 @@ export default function LoginPage() {
 
     return (
     <div className="w-[600px] mx-auto mt-30 p-6 border rounded text-center">
-        <h1 className="text-2xl mb-4 text-center">ログイン</h1>
+        <h1 className="text-2xl mb-4">ログイン</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <input
             type="email"
@@ -65,15 +71,19 @@ export default function LoginPage() {
             {...register('email')}
             className="w-full p-2 mb-2 border rounded"
             />
-            {errors.email && <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>}
+            {errors.email && <p className="text-red-500 text-sm mb-3 text-left">{errors.email.message}</p>}
 
-            <input
-            type="password"
-            placeholder="パスワード"
-            {...register('password')}
-            className="w-full p-2 mb-2 border rounded"
+            <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                    <PasswordInput
+                    {...field}
+                    placeholder="パスワード"
+                    />
+                )}
             />
-            {errors.password && <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>}
+            {errors.password && <p className="text-red-500 text-sm mb-3 text-left">{errors.password.message}</p>}
 
             <SubmitButton
                 isSubmitting={isSubmitting} type='submit'

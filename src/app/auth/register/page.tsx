@@ -1,11 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { signUp } from '@/lib/firebaseAuth';
 import { useRouter } from 'next/navigation';
 import SubmitButton from '@/components/common/SubmitButton';
+import PasswordInput from '@/components/common/PasswordInput';
 
 type FormData = {
     username: string;
@@ -21,14 +22,18 @@ const schema = yup.object({
 
 export default function RegisterPage() {
     const router = useRouter();
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors, isSubmitting } } = useForm<FormData>({
         resolver: yupResolver(schema),
         mode: 'onChange',
-    });
+        });
 
     const onSubmit = async (data: FormData) => {
         try {
-        await signUp(data.email, data.password, data.username);
+            await signUp(data.email, data.password, data.username);
             alert('登録に成功しました！');
             router.push('/auth/verify-email');
         } catch (error: any) {
@@ -56,11 +61,15 @@ export default function RegisterPage() {
         />
         {errors.email && <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>}
 
-        <input
-            {...register('password')}
-            type="password"
-            placeholder="パスワード（8文字以上）"
-            className="w-full p-2 mb-2 border rounded"
+        <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+                <PasswordInput
+                {...field}
+                placeholder="パスワード（8文字以上）"
+                />
+            )}
         />
         {errors.password && <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>}
 

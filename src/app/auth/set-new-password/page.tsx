@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useState, useEffect } from 'react';
@@ -11,6 +11,7 @@ import {
     confirmPasswordReset,
 } from 'firebase/auth';
 import SubmitButton from '@/components/common/SubmitButton';
+import PasswordInput from '@/components/common/PasswordInput';
 
 const schema = yup.object({
     newPassword: yup.string().required('パスワードは必須です').min(8, '8文字以上で入力してください'),
@@ -28,13 +29,12 @@ export default function ResetPasswordPage() {
     const [status, setStatus] = useState<'verifying' | 'verified' | 'invalidCode' | 'success'>('verifying');
 
     const {
-        register,
         handleSubmit,
         formState: { errors },
-        watch,
+        control,
     } = useForm<FormData>({
         resolver: yupResolver(schema),
-        mode: 'onChange',  // ここがリアルタイムバリデーションのポイント
+        mode: 'onChange',
     });
 
     useEffect(() => {
@@ -94,18 +94,23 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="w-lg mx-auto mt-40 text-center">
-            <h1 className="text-2xl font-bold mb-2">新しいパスワードを入力</h1>
+        <div className="w-lg mx-auto mt-40">
+            <h1 className="text-2xl font-bold mb-2 text-center">新しいパスワードを入力</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <input
-                    type="password"
-                    placeholder="新しいパスワード"
-                    {...register('newPassword')}
-                    className="border rounded p-2 mb-2 w-full"
+                <Controller
+                    name="newPassword"
+                    control={control}
+                    render={({ field }) => (
+                        <PasswordInput
+                        {...field}
+                        placeholder="新しいパスワード"
+                        />
+                    )}
                 />
                 {errors.newPassword && (
-                    <p className="text-red-500 mb-4 text-left">{errors.newPassword.message}</p>
+                    <p className="text-red-500 mb-4 text-sm">{errors.newPassword.message}</p>
                 )}
+
                 <SubmitButton isSubmitting={isSubmitting} type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
                     パスワードを変更
                 </SubmitButton>
