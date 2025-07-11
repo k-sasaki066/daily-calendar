@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useRouter } from 'next/navigation';
 
 type QuizItem = {
     漢字: string;
@@ -16,6 +17,8 @@ type QuizItem = {
 };
 
 export default function KanjiQuizPage() {
+    const router = useRouter();
+
     const [mode, setMode] = useState<"reading" | "writing" | null>(null);
     const [quizzes, setQuizzes] = useState<QuizItem[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -70,29 +73,39 @@ export default function KanjiQuizPage() {
         setCurrentIndex((prev) => prev + 1);
     };
 
+    const buttonClass = "text-white p-12 py-2 rounded m-4 text-3xl transform hover:scale-105 transition-transform duration-200";
+
     if (!mode) {
         return (
-        <div className="mt-20 p-6 text-center">
+        <div className="mt-15 p-6 text-center">
             <h1 className="text-3xl mb-4">クイズモードを選んでください</h1>
             <button
-            onClick={() => setMode("reading")}
-            className="bg-blue-500 text-white px-4 py-2 rounded m-4 text-3xl"
+                onClick={() => setMode("reading")}
+                className={`bg-blue-500 hover:bg-blue-600 active:bg-blue-700 ${buttonClass}`}
             >
             読み
             </button>
             <button
-            onClick={() => setMode("writing")}
-            className="bg-green-500 text-white px-4 py-2 rounded m-4 text-3xl"
+                onClick={() => setMode("writing")}
+                className={`bg-green-500 hover:bg-green-600 active:bg-green-700 ${buttonClass}`}
             >
             書き
             </button>
+            <div className="fixed bottom-10 right-[50%] translate-x-[50%]">
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    戻る
+                </button>
+            </div>
         </div>
         );
     }
 
     if (currentIndex >= quizzes.length) {
         return (
-        <div className="mt-20 p-6 text-center text-4xl">
+        <div className="mt-15 p-6 text-center text-4xl">
             <p className="mt-10">クイズ終了！</p>
             <p className="mt-20 text-6xl">正解数: {score} / {quizzes.length}</p>
             <button
@@ -100,7 +113,7 @@ export default function KanjiQuizPage() {
                 setMode(null);
                 setScore(0);
             }} // モード選択へ戻る
-            className="mt-8 bg-purple-500 text-white px-4 py-2 rounded text-3xl"
+            className="mt-8 bg-purple-400 text-white px-4 py-2 rounded text-3xl hover:bg-purple-600 active:bg-purple-700 transform hover:scale-105 transition-transform duration-200"
             >
             もう一度チャレンジ
             </button>
@@ -113,8 +126,8 @@ export default function KanjiQuizPage() {
     }
 
     return (
-        <div className="mt-20 p-6 text-center">
-            <div className="absolute bottom-12 right-[50%] translate-x-[50%]">
+        <div className="mt-15 p-6 text-center">
+            <div className="absolute bottom-12 right-[50%] translate-x-[50%] flex items-center gap-8">
                 <button
                     onClick={() => {
                     setMode(null);
@@ -123,14 +136,25 @@ export default function KanjiQuizPage() {
                     setSelected(null);
                     setShowResult(false);
                     }}
-                    className="text-blue-500 underline"
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
                 >
-                    モード選択に戻る
+                    モードを選ぶ
+                </button>
+
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    クイズをやめる
                 </button>
             </div>
 
+            <p className="text-2xl mb-4">
+                {currentIndex + 1} / {quizzes.length} 問目
+            </p>
+
             <h2 className="text-4xl mb-12">
-                {mode === "reading" ? `問題:  ${quiz.漢字}` : `問題:  ${quiz.漢字}`}
+                {mode === "reading" ? `${quiz.漢字}` : `${quiz.漢字}`}
             </h2>
 
             <div className="flex flex-col gap-6 items-center mb-6 text-2xl">
@@ -161,7 +185,7 @@ export default function KanjiQuizPage() {
         )}
 
         {showResult && (
-            <button onClick={next} className="bg-purple-500 text-white px-4 py-2 rounded text-3xl">
+            <button onClick={next} className="bg-purple-400 text-white px-4 py-2 rounded text-3xl hover:bg-purple-600 active:bg-purple-700 transform hover:scale-105 transition-transform duration-200">
                 {currentIndex < quizzes.length - 1 ? "次の問題へ" : "結果を見る"}
             </button>
         )}

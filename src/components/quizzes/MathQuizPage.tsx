@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type Question = {
     text: string;
@@ -158,6 +159,8 @@ const rand = (min: number, max: number): number =>
 const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
 
 export default function MathQuizPage() {
+    const router = useRouter();
+
     const [questionCount, setQuestionCount] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [selected, setSelected] = useState<string | number | null>(null);
@@ -197,7 +200,7 @@ export default function MathQuizPage() {
 
     if (finished) {
         return (
-        <div className="text-center p-6 mt-20 text-4xl">
+        <div className="text-center p-6 mt-15 text-4xl">
             <h2 className="mt-10">クイズ終了！</h2>
             <p className="mt-16 text-6xl">
             正解数: {correctCount} / {TOTAL}
@@ -209,7 +212,7 @@ export default function MathQuizPage() {
                 setFinished(false);
                 generate();
             }}
-            className="mt-8 bg-blue-500 text-white px-6 py-2 rounded text-2xl hover:bg-blue-600"
+            className="mt-8 bg-blue-500 text-white px-6 py-2 rounded text-2xl hover:bg-blue-600 active:bg-blue-700 transform hover:scale-105 transition-transform duration-200"
             >
             もう一度挑戦する
             </button>
@@ -218,44 +221,53 @@ export default function MathQuizPage() {
     }
 
     return (
-        <div className="text-center p-8 mt-8 flex flex-col items-center max-w-[800px]">
-        <h1 className="text-xl mb-4">
-            {questionCount} / {TOTAL} 問目
-        </h1>
-        <p className="text-4xl mb-8 font-bold">{question.text}</p>
-        <div className="grid grid-cols-2 gap-8 mb-6">
-            {question.choices.map((c, i) => (
-            <button
-                key={i}
-                onClick={() => handleSelect(c)}
-                disabled={showResult}
-                className={`border px-4 py-2 rounded text-2xl ${
-                showResult && c === question.correct
-                    ? 'bg-green-200'
-                    : showResult && selected === c
-                    ? 'bg-red-200'
-                    : ''
-                }`}
-            >
-                {c}
-            </button>
-            ))}
-        </div>
-        {showResult && (
-        <div className="mt-6 text-center">
-            <div className="mb-4 text-2xl">
-            {selected === question.correct
-                ? '⭕️ 正解！'
-                : `❌ 不正解。正解は ${question.correct}`}
+        <div className="text-center p-8 mt-15 flex flex-col items-center max-w-[800px]">
+            <p className="text-2xl mb-4">
+                {questionCount} / {TOTAL} 問目
+            </p>
+            <h2 className="text-4xl mb-8 font-bold">{question.text}</h2>
+            <div className="grid grid-cols-2 gap-8 mb-6">
+                {question.choices.map((c, i) => (
+                <button
+                    key={i}
+                    onClick={() => handleSelect(c)}
+                    disabled={showResult}
+                    className={`border px-4 py-2 rounded text-2xl ${
+                    showResult && c === question.correct
+                        ? 'bg-green-200'
+                        : showResult && selected === c
+                        ? 'bg-red-200'
+                        : 'hover:bg-blue-100'
+                    }`}
+                >
+                    {c}
+                </button>
+                ))}
             </div>
-            <button
-            onClick={handleNext}
-            className="bg-blue-500 text-white px-6 py-2 rounded text-2xl"
-            >
-            {questionCount === TOTAL ? '結果を見る' : '次の問題へ'}
-            </button>
-        </div>
-        )}
+            {showResult && (
+            <div className="mt-6 text-center">
+                <div className="mb-4 text-2xl">
+                {selected === question.correct
+                    ? '⭕️ 正解！'
+                    : `❌ 不正解。正解は ${question.correct}`}
+                </div>
+                <button
+                onClick={handleNext}
+                className="bg-blue-500 text-white px-6 py-2 rounded text-2xl hover:bg-blue-600 active:bg-blue-700 transform hover:scale-105 transition-transform duration-200"
+                >
+                {questionCount === TOTAL ? '結果を見る' : '次の問題へ'}
+                </button>
+            </div>
+            )}
+
+            <div className="fixed bottom-10 right-[50%] translate-x-[50%]">
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    クイズをやめる
+                </button>
+            </div>
         </div>
     );
 }
