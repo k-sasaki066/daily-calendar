@@ -122,7 +122,7 @@ export default function KanjiQuizPage() {
 
     if (currentIndex >= quizzes.length) {
         return (
-        <div className="mt-15 p-6 text-center text-4xl">
+        <div className="mt-15 p-6 text-center text-4xl pb-24">
             <p className="mt-10">クイズ終了！</p>
             <p className="mt-20 text-6xl">正解数: {score} / {quizzes.length}</p>
             <button
@@ -134,6 +134,15 @@ export default function KanjiQuizPage() {
             >
             もう一度チャレンジ
             </button>
+            
+            <div className="fixed bottom-10 right-[50%] translate-x-[50%]">
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    戻る
+                </button>
+            </div>
         </div>
         );
     }
@@ -143,7 +152,7 @@ export default function KanjiQuizPage() {
     }
 
     return (
-        <div className="mt-15 p-6 text-center">
+        <div className="mt-10 p-6 text-center">
             <div className="absolute bottom-12 right-[50%] translate-x-[50%] flex items-center gap-8">
                 <button
                     onClick={() => {
@@ -196,7 +205,7 @@ export default function KanjiQuizPage() {
         </div>
 
         {showResult && (
-            <div className="mt-8 mb-6 text-3xl">
+            <div className="mt-8 mb-4 text-3xl">
             {selected === quiz.正解 ? "⭕️ 正解！" : `❌ 不正解。正解は「${quiz.正解}」`}
             </div>
         )}

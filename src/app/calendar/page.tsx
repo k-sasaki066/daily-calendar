@@ -117,7 +117,7 @@ export default function StampCard() {
     };
 
     return (
-    <div className="p-4 mx-auto w-[800px] text-center mt-10">
+    <div className="p-4 mx-auto w-[90%] text-center mt-10">
         <div className="flex justify-center gap-4 items-center mb-10">
             <button
             onClick={prevMonth}

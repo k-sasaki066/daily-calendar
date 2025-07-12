@@ -15,7 +15,7 @@ const Clock: React.FC<ClockProps> = ({ hour, minute }) => {
     const tickMarks = Array.from({ length: 60 }, (_, i) => i);
 
     return (
-        <svg width="300" height="300" viewBox="0 0 100 100">
+        <svg width="280" height="280" viewBox="0 0 100 100">
         {/* 枠 */}
         <circle cx="50" cy="50" r="48" stroke="black" strokeWidth="2" fill="white" />
 
