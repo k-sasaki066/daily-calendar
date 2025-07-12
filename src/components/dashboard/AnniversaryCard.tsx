@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { getTodayAnniversary } from "@/lib/getTodayAnniversary";
 
@@ -9,11 +10,19 @@ type Anniversary = {
 
 export default function TodayEvent() {
     const [event, setEvent] = useState<Anniversary | null>(null);
+    const [error, setError] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-    (async () => {
-        const data: Anniversary | null = await getTodayAnniversary();
-        setEvent(data);
+        (async () => {
+            try {
+                const data: Anniversary | null = await getTodayAnniversary();
+                setEvent(data);
+            } catch (error) {
+                console.error("❌ 記念日取得に失敗:", error);
+                setError(true);
+                router.push("/error");
+            }
         })();
     }, []);
 

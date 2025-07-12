@@ -41,6 +41,7 @@ export default function QuizPage() {
                     console.log("結果を保存しました");
                 } catch (error) {
                     console.error("結果の保存に失敗しました", error);
+                    router.push("/error");
                 }
             })();
         }

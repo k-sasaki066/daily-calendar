@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -10,6 +11,8 @@ import StampCalendar from '@/components/calendar/StampCard';
 type StampedDay = { challenges: string[]; correctCount: number };
 
 export default function StampCard() {
+    const router = useRouter();
+    
     const today = new Date();
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0〜11
@@ -32,18 +35,22 @@ export default function StampCard() {
         const fetchStampData = async () => {
             const docId = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
             const ref = doc(db, "users", user.uid, "calendar", docId);
-            const snap = await getDoc(ref);
-
-            if (snap.exists()) {
-                const data = snap.data();
-                setStampedDaysData(data.stampedDays || {});
-                // 合計ポイント（正解数の合計）を計算
-                const stampedDaysObj = data.stampedDays as Record<string, StampedDay> | undefined;
-                const total = Object.values(stampedDaysObj ?? {}).reduce((sum, day) => sum + (day.correctCount ?? 0), 0);
-                setTotalPoints(total);
-            } else {
-                setStampedDaysData({});
-                setTotalPoints(0);
+            try {
+                const snap = await getDoc(ref);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    setStampedDaysData(data.stampedDays || {});
+                    // 合計ポイント（正解数の合計）を計算
+                    const stampedDaysObj = data.stampedDays as Record<string, StampedDay> | undefined;
+                    const total = Object.values(stampedDaysObj ?? {}).reduce((sum, day) => sum + (day.correctCount ?? 0), 0);
+                    setTotalPoints(total);
+                } else {
+                    setStampedDaysData({});
+                    setTotalPoints(0);
+                }
+            } catch (error) {
+                console.error("Firestore 読み込みエラー:", error);
+                router.push("/error");
             }
         };
 

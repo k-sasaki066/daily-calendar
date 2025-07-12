@@ -27,18 +27,20 @@ export default function KanjiQuizPage() {
     const [showResult, setShowResult] = useState(false);
     const [score, setScore] = useState(0);
     const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (quizzes.length > 0 && currentIndex >= quizzes.length) {
             (async () => {
                 try {
-                await handleQuizSubmit({
-                    quizType: "kanji",
-                    correctCount: score,
-                });
-                console.log("結果を保存しました");
+                    await handleQuizSubmit({
+                        quizType: "kanji",
+                        correctCount: score,
+                    });
+                    console.log("結果を保存しました");
                 } catch (error) {
-                console.error("結果の保存に失敗しました", error);
+                    console.error("結果の保存に失敗しました", error);
+                    router.push("/error");
                 }
             })();
         }
@@ -48,15 +50,22 @@ export default function KanjiQuizPage() {
         if (!mode) return;
 
         const fetchData = async () => {
-        const snapshot = await getDocs(collection(db, mode));
-        const data = snapshot.docs.map((doc) => doc.data() as QuizItem);
-        // // シャッフルして10問だけ抽出
-        const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 10);
+            try {
+                const snapshot = await getDocs(collection(db, mode));
+                const data = snapshot.docs.map((doc) => doc.data() as QuizItem);
+                // // シャッフルして10問だけ抽出
+                const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 10);
 
-        setQuizzes(shuffled);
-        setCurrentIndex(0);
-        setSelected(null);
-        setShowResult(false);
+                setQuizzes(shuffled);
+                setCurrentIndex(0);
+                setSelected(null);
+                setShowResult(false);
+                setError(null);
+            } catch (error) {
+                console.error("Firestoreデータ取得エラー:", error);
+                setError("データの取得に失敗しました。");
+                router.push('/error');
+            }
         };
 
         fetchData();
