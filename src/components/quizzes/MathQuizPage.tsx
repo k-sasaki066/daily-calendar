@@ -233,12 +233,21 @@ export default function MathQuizPage() {
             >
             もう一度挑戦する
             </button>
+            
+            <div className="fixed bottom-10 right-[50%] translate-x-[50%]">
+                <button
+                    onClick={() => router.push('/quiz')}
+                    className="text-blue-500 underline text-xl hover:text-blue-700"
+                >
+                    戻る
+                </button>
+            </div>
         </div>
         );
     }
 
     return (
-        <div className="text-center p-8 mt-15 flex flex-col items-center max-w-[800px]">
+        <div className="text-center p-8 mt-15 flex flex-col items-center max-w-[800px] pb-20">
             <p className="text-2xl mb-4">
                 {questionCount} / {TOTAL} 問目
             </p>
