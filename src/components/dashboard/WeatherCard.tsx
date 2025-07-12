@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type WeatherData = {
     weather: {
@@ -21,6 +22,7 @@ type WeatherData = {
 export default function WeatherWidget() {
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -30,22 +32,27 @@ export default function WeatherWidget() {
             const lon = pos.coords.longitude;
             // 取得した緯度経度を使って天気APIにリクエスト
             try {
-            const res = await fetch(
-                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ja`
-            );
-            const data = await res.json();
-            setWeather(data);
+                const res = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ja`
+                );
+                if (!res.ok) {
+                    throw new Error(`APIエラー: ${res.status}`);
+                }
+                const data = await res.json();
+                setWeather(data);
             } catch (e) {
-            setError("天気情報の取得に失敗しました");
+                setError("天気情報の取得に失敗しました");
+                router.push("/error");
             }
         },
-        () => {
+        (err) => {
+            console.error("位置情報エラー:", err);
             setError("位置情報の取得を許可してください");
+            router.push("/error");
         }
         );
-    }, []);
+    }, [router]);
 
-    if (error) return <p>{error}</p>;
     if (!weather) return <p>読み込み中…</p>;
 
     const iconCode = weather.weather[0].icon;

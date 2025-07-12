@@ -180,13 +180,14 @@ export default function MathQuizPage() {
         if (finished) {
             (async () => {
                 try {
-                await handleQuizSubmit({
-                    quizType: "calc",
-                    correctCount,
-                });
-                console.log("結果を保存しました");
+                    await handleQuizSubmit({
+                        quizType: "calc",
+                        correctCount,
+                    });
+                    console.log("結果を保存しました");
                 } catch (error) {
-                console.error("結果の保存に失敗しました", error);
+                    console.error("結果の保存に失敗しました", error);
+                    router.push("/error");
                 }
             })();
         }
