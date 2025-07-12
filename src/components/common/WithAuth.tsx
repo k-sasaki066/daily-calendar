@@ -21,7 +21,7 @@ export const withAuth = (Component: React.ComponentType) => {
 
         if (loading || !user || !user.emailVerified) {
             return (
-                <div className="flex items-center justify-center min-h-screen">
+                <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
                     <p className="text-gray-600 text-2xl">読み込み中...</p>
                 </div>
             );
