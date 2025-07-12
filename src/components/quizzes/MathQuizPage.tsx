@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { handleQuizSubmit } from '@/lib/quiz/handleQuizSubmit';
 
 type Question = {
     text: string;
@@ -174,6 +175,22 @@ export default function MathQuizPage() {
         setSelected(null);
         setShowResult(false);
     };
+
+    useEffect(() => {
+        if (finished) {
+            (async () => {
+                try {
+                await handleQuizSubmit({
+                    quizType: "calc",
+                    correctCount,
+                });
+                console.log("結果を保存しました");
+                } catch (error) {
+                console.error("結果の保存に失敗しました", error);
+                }
+            })();
+        }
+    }, [finished, correctCount]);
 
     useEffect(() => {
         generate();

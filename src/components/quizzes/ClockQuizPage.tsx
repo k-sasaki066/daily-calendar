@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import Clock from "@/components/quizzes/Clock";
+import { handleQuizSubmit } from "@/lib/quiz/handleQuizSubmit";
 
 type Time = { hour: number; minute: number };
 
@@ -30,7 +31,22 @@ export default function QuizPage() {
     const [quizFinished, setQuizFinished] = useState(false);
 
     useEffect(() => {
-        // 初回問題作成
+        if (quizFinished) {
+            (async () => {
+                try {
+                    await handleQuizSubmit({
+                        quizType: "clock",
+                        correctCount,
+                    });
+                    console.log("結果を保存しました");
+                } catch (error) {
+                    console.error("結果の保存に失敗しました", error);
+                }
+            })();
+        }
+    }, [quizFinished, correctCount]);
+
+    useEffect(() => {
         setMounted(true);
         generateQuestion();
         setQuestionCount(1);

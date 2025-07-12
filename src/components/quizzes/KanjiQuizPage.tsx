@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useRouter } from 'next/navigation';
+import { handleQuizSubmit } from "@/lib/quiz/handleQuizSubmit";
 
 type QuizItem = {
     漢字: string;
@@ -26,6 +27,22 @@ export default function KanjiQuizPage() {
     const [showResult, setShowResult] = useState(false);
     const [score, setScore] = useState(0);
     const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (quizzes.length > 0 && currentIndex >= quizzes.length) {
+            (async () => {
+                try {
+                await handleQuizSubmit({
+                    quizType: "kanji",
+                    correctCount: score,
+                });
+                console.log("結果を保存しました");
+                } catch (error) {
+                console.error("結果の保存に失敗しました", error);
+                }
+            })();
+        }
+    }, [currentIndex, quizzes.length, score]);
 
     useEffect(() => {
         if (!mode) return;
