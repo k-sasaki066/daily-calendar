@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { handleQuizSubmit } from '@/lib/quiz/handleQuizSubmit';
+import { saveAchievement, isAchievementEarnedToday, check7DayChallenge } from "@/lib/quiz/saveStamp";
+import { useAuth } from '@/context/AuthContext';
+import { BadgePopup } from "@/components/common/BadgePopup";
 
 type Question = {
     text: string;
@@ -161,6 +164,7 @@ const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
 
 export default function MathQuizPage() {
     const router = useRouter();
+    const { user } = useAuth();
 
     const [questionCount, setQuestionCount] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
@@ -168,6 +172,14 @@ export default function MathQuizPage() {
     const [correctCount, setCorrectCount] = useState(0);
     const [showResult, setShowResult] = useState(false);
     const [finished, setFinished] = useState(false);
+    const [badgeQueue, setBadgeQueue] = useState<BadgeInfo[]>([]);
+    const [currentBadge, setCurrentBadge] = useState<BadgeInfo | null>(null);
+
+    type BadgeInfo = {
+        title: string;
+        image: string;
+        message: string;
+    };
 
     const generate = () => {
         const q = generateRandomQuestion();
@@ -184,6 +196,41 @@ export default function MathQuizPage() {
                         quizType: "calc",
                         correctCount,
                     });
+
+                    const queue: BadgeInfo[] = [];
+
+                    if (user) {
+                        const isStreak = await check7DayChallenge(user.uid);
+                        const alreadyEarned = await isAchievementEarnedToday(user.uid, "がんばり賞");
+
+                        if (isStreak && !alreadyEarned) {
+                            await saveAchievement(user.uid, "がんばり賞");
+                            queue.push({
+                                title: "がんばり賞",
+                                image: "/badges/streak.png",
+                                message: "7日間連続チャレンジ達成！",
+                            });
+                        }
+                    }
+
+                    if (correctCount === TOTAL && user) {
+                        const alreadyEarnedToday = await isAchievementEarnedToday(user.uid, "計算マスター");
+
+                        if (!alreadyEarnedToday) {
+                            await saveAchievement(user.uid, "計算マスター");
+                            queue.push({
+                                title: "計算マスター",
+                                image: "/badges/math-master.png",
+                                message: "全問正解おめでとうございます！",
+                            });
+                        }
+                    }
+                    
+                    if (queue.length > 0) {
+                        setBadgeQueue(queue);
+                        setCurrentBadge(queue[0]);
+                    }
+
                     console.log("結果を保存しました");
                 } catch (error) {
                     console.error("結果の保存に失敗しました", error);
@@ -243,6 +290,19 @@ export default function MathQuizPage() {
                     戻る
                 </button>
             </div>
+                
+            {currentBadge && (
+                <BadgePopup
+                    badgeImage={currentBadge.image}
+                    title={currentBadge.title}
+                    message={currentBadge.message}
+                    onClose={() => {
+                    const nextQueue = badgeQueue.slice(1);
+                    setBadgeQueue(nextQueue);
+                    setCurrentBadge(nextQueue[0] ?? null);
+                    }}
+                />
+            )}
         </div>
         );
     }
