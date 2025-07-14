@@ -5,6 +5,9 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useRouter } from 'next/navigation';
 import { handleQuizSubmit } from "@/lib/quiz/handleQuizSubmit";
+import { saveAchievement, isAchievementEarnedToday, check7DayChallenge } from "@/lib/quiz/saveStamp";
+import { useAuth } from '@/context/AuthContext';
+import { BadgePopup } from "@/components/common/BadgePopup";
 
 type QuizItem = {
     漢字: string;
@@ -19,6 +22,7 @@ type QuizItem = {
 
 export default function KanjiQuizPage() {
     const router = useRouter();
+    const { user } = useAuth();
 
     const [mode, setMode] = useState<"reading" | "writing" | null>(null);
     const [quizzes, setQuizzes] = useState<QuizItem[]>([]);
@@ -28,6 +32,14 @@ export default function KanjiQuizPage() {
     const [score, setScore] = useState(0);
     const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [badgeQueue, setBadgeQueue] = useState<BadgeInfo[]>([]);
+    const [currentBadge, setCurrentBadge] = useState<BadgeInfo | null>(null);
+
+    type BadgeInfo = {
+        title: string;
+        image: string;
+        message: string;
+    };
 
     useEffect(() => {
         if (quizzes.length > 0 && currentIndex >= quizzes.length) {
@@ -37,6 +49,41 @@ export default function KanjiQuizPage() {
                         quizType: "kanji",
                         correctCount: score,
                     });
+
+                    const queue: BadgeInfo[] = [];
+
+                    if (user) {
+                        const isStreak = await check7DayChallenge(user.uid);
+                        const alreadyEarned = await isAchievementEarnedToday(user.uid, "がんばり賞");
+
+                        if (isStreak && !alreadyEarned) {
+                            await saveAchievement(user.uid, "がんばり賞");
+                            queue.push({
+                                title: "がんばり賞",
+                                image: "/badges/streak.png",
+                                message: "7日間連続チャレンジ達成！",
+                            });
+                        }
+                    }
+
+                    if (score === quizzes.length && user) {
+                        const alreadyEarnedToday = await isAchievementEarnedToday(user.uid, "漢字マスター");
+
+                        if (!alreadyEarnedToday) {
+                            await saveAchievement(user.uid, "漢字マスター");
+                            queue.push({
+                                title: "漢字マスター",
+                                image: "/badges/kanji-master.png",
+                                message: "全問正解おめでとうございます！",
+                            });
+                        }
+                    }
+
+                    if (queue.length > 0) {
+                        setBadgeQueue(queue);
+                        setCurrentBadge(queue[0]);
+                    }
+
                     console.log("結果を保存しました");
                 } catch (error) {
                     console.error("結果の保存に失敗しました", error);
@@ -152,6 +199,19 @@ export default function KanjiQuizPage() {
                     戻る
                 </button>
             </div>
+            
+            {currentBadge && (
+                <BadgePopup
+                    badgeImage={currentBadge.image}
+                    title={currentBadge.title}
+                    message={currentBadge.message}
+                    onClose={() => {
+                    const nextQueue = badgeQueue.slice(1);
+                    setBadgeQueue(nextQueue);
+                    setCurrentBadge(nextQueue[0] ?? null);
+                    }}
+                />
+            )}
         </div>
         );
     }

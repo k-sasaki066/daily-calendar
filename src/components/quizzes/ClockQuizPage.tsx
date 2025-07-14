@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import Clock from "@/components/quizzes/Clock";
 import { handleQuizSubmit } from "@/lib/quiz/handleQuizSubmit";
+import { useAuth } from '@/context/AuthContext';
+import { saveAchievement, isAchievementEarnedToday, check7DayChallenge } from "@/lib/quiz/saveStamp";
+import { BadgePopup } from "@/components/common/BadgePopup";
 
 type Time = { hour: number; minute: number };
 
@@ -20,6 +23,7 @@ const TOTAL_QUESTIONS = 10;
 
 export default function QuizPage() {
     const router = useRouter();
+    const { user } = useAuth();
 
     const [mounted, setMounted] = useState(false);
     const [question, setQuestion] = useState<Time>({ hour: 3, minute: 15 });
@@ -29,6 +33,14 @@ export default function QuizPage() {
     const [questionCount, setQuestionCount] = useState(0);
     const [correctCount, setCorrectCount] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
+    const [badgeQueue, setBadgeQueue] = useState<BadgeInfo[]>([]);
+    const [currentBadge, setCurrentBadge] = useState<BadgeInfo | null>(null);
+
+    type BadgeInfo = {
+        title: string;
+        image: string;
+        message: string;
+    };
 
     useEffect(() => {
         if (quizFinished) {
@@ -38,6 +50,41 @@ export default function QuizPage() {
                         quizType: "clock",
                         correctCount,
                     });
+
+                    const queue: BadgeInfo[] = [];
+
+                    if (user) {
+                        const isStreak = await check7DayChallenge(user.uid);
+                        const alreadyEarned = await isAchievementEarnedToday(user.uid, "がんばり賞");
+
+                        if (isStreak && !alreadyEarned) {
+                            await saveAchievement(user.uid, "がんばり賞");
+                            queue.push({
+                                title: "がんばり賞",
+                                image: "/badges/streak.png",
+                                message: "7日間連続チャレンジ達成！",
+                            });
+                        }
+                    }
+
+                    if (correctCount === TOTAL_QUESTIONS && user) {
+                        const alreadyEarnedToday = await isAchievementEarnedToday(user.uid, "時計マスター");
+
+                        if (!alreadyEarnedToday) {
+                            await saveAchievement(user.uid, "時計マスター");
+                            queue.push({
+                                title: "時計マスター",
+                                image: "/badges/clock-master.png",
+                                message: "全問正解おめでとうございます！",
+                            });
+                        }
+                    }
+
+                    if (queue.length > 0) {
+                        setBadgeQueue(queue);
+                        setCurrentBadge(queue[0]);
+                    }
+                    
                     console.log("結果を保存しました");
                 } catch (error) {
                     console.error("結果の保存に失敗しました", error);
@@ -121,6 +168,19 @@ export default function QuizPage() {
                         戻る
                     </button>
                 </div>
+
+                {currentBadge && (
+                <BadgePopup
+                    badgeImage={currentBadge.image}
+                    title={currentBadge.title}
+                    message={currentBadge.message}
+                    onClose={() => {
+                    const nextQueue = badgeQueue.slice(1);
+                    setBadgeQueue(nextQueue);
+                    setCurrentBadge(nextQueue[0] ?? null);
+                    }}
+                />
+            )}
             </div>
         );
     }
