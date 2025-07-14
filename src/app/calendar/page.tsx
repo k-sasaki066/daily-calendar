@@ -3,12 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import React, { useState } from "react";
 import StampCalendar from '@/components/calendar/StampCard';
+import EarnedBadges from "@/components/calendar/EarnedBadges";
 
 type StampedDay = { challenges: string[]; correctCount: number };
+
+type BadgeInfo = {
+    title: string;
+};
 
 export default function StampCard() {
     const router = useRouter();
@@ -21,6 +26,7 @@ export default function StampCard() {
     const [stampedDaysData, setStampedDaysData] = useState<{ [day: number]: { challenges: string[]; correctCount: number } }>({});
     const [totalPoints, setTotalPoints] = useState(0);
     const [displayedPoints, setDisplayedPoints] = useState(0);
+    const [badges, setBadges] = useState<BadgeInfo[]>([]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(getAuth(), (currentUser) => {
@@ -31,6 +37,30 @@ export default function StampCard() {
 
     useEffect(() => {
         if (!user) return;
+
+        const fetchBadges = async () => {
+            try {
+                const now = new Date();
+                const year = currentYear;
+                const month = String(currentMonth + 1).padStart(2, "0");
+                const basePath = `users/${user.uid}/achievementByMonth/${year}-${month}/titles`;
+                const titlesRef = collection(db, basePath);
+
+                // 今月取得済みの称号のドキュメント一覧を取得
+                const snap = await getDocs(query(titlesRef, orderBy("earnedAt", "asc")));
+
+                const fetchedBadges: BadgeInfo[] = [];
+
+                for (const docSnap of snap.docs) {
+                    const titleId = docSnap.id;
+                    fetchedBadges.push({ title: titleId });
+                }
+
+                setBadges(fetchedBadges);
+            } catch (error) {
+                console.error("称号の取得に失敗しました:", error);
+            }
+        };
 
         const fetchStampData = async () => {
             const docId = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
@@ -54,6 +84,7 @@ export default function StampCard() {
             }
         };
 
+        fetchBadges();
         fetchStampData();
     }, [currentYear, currentMonth, user]);
 
@@ -164,6 +195,7 @@ export default function StampCard() {
                 <span className="text-2xl font-medium">ポイント</span>
             </div>
         </div>
+        <EarnedBadges badges={badges} />
     </div>
     );
 }
