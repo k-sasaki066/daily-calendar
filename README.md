@@ -434,12 +434,14 @@ NEXT_PUBLIC_WEATHER_API_KEY=your_api_key
 https://docs.google.com/spreadsheets/d/1SYj040s7bdlVsaMU8tqUeIQQUwRIHSiByHwh9Bwtuno/edit?gid=1954454577#gid=1954454577
 <br>
 <br>
-2. 『拡張機能』→『Apps Script』
+2. 『ファイル』→『コピーを作成』→任意のファイル名でコピーを作成する
+<br>
+作成したコピーファイルの『拡張機能』→『Apps Script』を開く
 <br>
 <img width="983" height="270" alt="スクリーンショット 2025-07-15 15 20 31" src="https://github.com/user-attachments/assets/bf2b0457-28eb-4630-b93f-a2245d136e84" />
 <br>
 <br>
-3. 表示されるコードの該当部分をFirebaseのプロジェクトIDに変更する
+3. 表示されるコードの該当部分を自身のFirebaseのプロジェクトIDに変更する
 <br>
 <img width="1091" height="204" alt="スクリーンショット 2025-07-15 15 25 45" src="https://github.com/user-attachments/assets/b952b377-5226-4b51-97d9-c37fdf9f1d6e" />
 <br>
