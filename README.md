@@ -91,3 +91,373 @@
 | --- | --- |
 |<img width="500" height="503" alt="カレンダー例" src="https://github.com/user-attachments/assets/29f5784a-7416-4258-ba08-199ccd1e8672" />|<img width="500" height="567" alt="カレンダー例2" src="https://github.com/user-attachments/assets/f5135a24-6ef7-4d56-9495-c04c265b01e3" />|
 |ヘッダーメニューのカレンダーをクリックするとカレンダー画面に遷移します。<br>今月のカレンダーが表示され、両脇のボタンで前月と翌月を切り替えられます。<br>その日に1回でもクイズに挑戦できたらスタンプが表示されます。このスタンプは月毎に変わります。<br>すべてのクイズに挑戦できた場合は特別スタンプになります。<br>合計正解数がアニメーション付きで表示されます。|カレンダーの下に称号が表示されます。その日に獲得した称号とその月に獲得した称号を分けて表示しています。<br>7日間連続で挑戦できた場合は頑張り賞がもらえます。|
+
+## 実行環境
+| 技術      | 説明                           |
+|----------------|--------------------------------|
+|OS|Alpine Linux（Docker ベースイメージ）|
+|Node.js	20.x|（node:20-alpine)|
+|Package Manager|Yarn|
+|フレームワーク|Next.js 15.3.5|
+|JavaScript|React 19|
+|型システム|TypeScript 5.x|
+|CSSフレームワーク|Tailwind CSS 4.1|
+|バリデーション|React Hook Form + Yup|
+|アニメーション|Lucide React|
+|Firebase SDK|v11（Authentication, Firestore）|
+|環境実行方式|Docker コンテナ|
+
+## 使用技術
+### Frontend
+| 技術   |	説明                              |
+|----------------|--------------------------------|
+|Next.js|バージョン 15(App Router 使用)|
+|React|バージョン 19|
+|TypeScript|静的型付け|
+|Tailwind CSS|CSS フレームワーク|
+|Framer Motion|アニメーションライブラリ|
+|React Hook Form|フォーム管理ライブラリ|
+|Yup|バリデーションスキーマ定義|
+|Lucide Icons|アイコンライブラリ|
+|PostCSS|CSSトランスパイル|
+
+### Backend
+| 技術   |	説明                              |
+|----------------|--------------------------------|
+|Firebase Authentication|ユーザー認証|
+|Cloud Firestore|NoSQL データベース|
+|Firebase SDK v11|Firebase の JavaScript SDK|
+
+## 環境構築
+<br>
+① gitクローン
+
+```
+git clone https://github.com/k-sasaki066/daily-calendar.git
+```
+<br>
+② docker composeのバージョン確認（バージョンによって一部記載が異なるため）
+
+```
+docker compose version
+```
+<br>
+▫️ -v1の場合
+<br>
+<br>
+docker-compose.ymlファイルの先頭に追加
+
+```
+version: '3.8'
+```
+<br>
+以下のdocker composeコマンドをdocker-composeに読み替えて実行してください
+<br>
+<br>
+▫️ -v2の場合
+<br>
+変更点なし
+<br>
+<br>
+③ dockerビルド
+
+```
+docker compose up -d --build
+```
+<br>
+<br>
+④envファイル作成
+
+```
+touch .env.local
+```
+
+<br>
+<br>
+
+### Firebase設定
+<br>
+▫️ Firebaseプロジェクト作成（公式ページ https://firebase.google.com/?hl=ja）
+<br>
+1. Firebaseアカウントを作成する（アカウント作成するには、Googleアカウントが必要です）
+<br>
+<img width="700" alt="トップ画面" src="https://github.com/user-attachments/assets/95c8afe0-b847-4edb-85c1-77eb983efd32" />
+<br>
+<br>
+2. ログイン後、コンソール画面にて『Firebaseプロジェクトを使ってみる』をクリック
+<br>
+<img width="700" alt="1 プロジェクト作成" src="https://github.com/user-attachments/assets/86ab9923-29df-47d4-a348-a3155d626c78" />
+<br>
+<br>
+3. プロジェクト名を入力する（任意の名前）
+<br>
+<img width="700" alt="2 プロジェクト名" src="https://github.com/user-attachments/assets/cd77cf4c-a006-49bf-aefc-c886349c1c08" />
+<br>
+<br>
+4. Gemini（生成AI）の設定をして続行ボタンをクリック
+<br>
+<img width="700" alt="3 gemini設定" src="https://github.com/user-attachments/assets/58c763f6-0d6f-4a0b-80e8-b08d0e699d43" />
+<br>
+<br>
+5. Google アナリティクスを有効にするか選択→ オフでも問題なし（後から有効化可能）
+<br>
+<img width="700" alt="4 アナリティクス" src="https://github.com/user-attachments/assets/ac00cfd3-7c40-4823-ac4a-34566f7c4804" />
+<br>
+<br>
+6. プロジェクト作成ボタンをクリック
+<br>
+<img width="700" alt="5 作成" src="https://github.com/user-attachments/assets/8d396c8a-27cd-4b10-a118-c4aa27d51b35" />
+
+
+### Firebase Authentication設定手順
+<br>
+1. コンソール画面左のメニューから『構築』→『Authentication』をクリック
+<br>
+<img width="700" alt="1 authentication設定" src="https://github.com/user-attachments/assets/ed2c678f-450e-418d-929d-f71d06768432" />
+<br>
+<br>
+2. 『始める』ボタンをクリック→表示される項目から『メール / パスワード』をクリック
+<br>
+<img width="700" alt="2 Authenticationクリック後" src="https://github.com/user-attachments/assets/cefef638-e3ea-4a5d-862a-a3a1eee2b795" />
+<br>
+<br>
+3. メール / パスワードを有効にする
+<br>
+<img width="700" alt="3 有効にする" src="https://github.com/user-attachments/assets/ef834190-a878-481d-ae75-3d5be12e0d63" />
+
+
+### Firebaseメール認証設定
+<br>
+1. 『Authentication』→『テンプレート』→『メールアドレスの確認』
+<br>
+有効にするボタンがなければ、すでに有効になっています
+<br>
+送信されるメール内容が表示されます。下のテンプレート言語を英語→日本語に変更するとメール内容が日本語に変更されます
+<br>
+<img width="852" height="558" alt="メールアドレスの確認" src="https://github.com/user-attachments/assets/372a36ff-c5c6-4589-a975-0d714a174e28" />
+<br>
+<br>
+3. 『編集ボタン』→『アクションURLをカスタマイズ』→アクションURLを「http://localhost:3000/auth/action」に設定する
+<br>
+※メール内のリンクをクリックすると認証完了ページ（Firebaseで用意されているデフォルトページ）に遷移します。このページにボタンを加えるなどカスタマイズしたい場合に設定
+<br>
+<img width="846" height="555" alt="アクションURLカスタマイズ" src="https://github.com/user-attachments/assets/e8b06f32-1221-4d42-936d-e060fc4e2d50" />
+<br>
+<br>
+3.承認済みドメイン確認
+<br>
+『Authentication』→『設定』→『承認済みドメイン』(開発環境で使用するlocalhostがあるか)
+<br>
+<img width="867" height="556" alt="承認済みドメイン確認" src="https://github.com/user-attachments/assets/c4519ba1-7ca8-45cc-9307-ad9fbbd3556b" />
+<br>
+<br>
+
+※送信メールはFirebase の内部メールサーバーから送信されるため、MailHog などではキャプチャできません。本物の Gmail や Yahoo メールなどを使って実際に送信確認できます
+<br>
+<br>
+
+
+### Firebaseパスワード再設定
+<br>
+1. 『Authentication』→『テンプレート』→『パスワードの再設定』
+<br>
+有効にするボタンがなければ、すでに有効になっています
+<br>
+送信されるメール内容が表示されます。下のテンプレート言語を英語→日本語に変更するとメール内容が日本語に変更されます
+<br>
+<img width="855" height="558" alt="パスワード再設定画面" src="https://github.com/user-attachments/assets/c266d69d-7c45-429b-91f9-cee3b52b28e5" />
+<br>
+<br>
+3. 『編集ボタン』→『アクションURLをカスタマイズ』→アクションURLを「http://localhost:3000/auth/action」に設定する
+   <br>
+(アクションURLはメール認証と同期しているので、すでに設定した場合は「http://localhost:3000/auth/action」になっていることを確認)
+<br>
+※メール内のリンクをクリックすると新パスワード入力ページ（Firebaseで用意されているデフォルトページ）に遷移します。このページにボタンを加えるなどカスタマイズしたい場合に設定
+<br>
+<img width="846" height="555" alt="アクションURLカスタマイズ" src="https://github.com/user-attachments/assets/e8b06f32-1221-4d42-936d-e060fc4e2d50" />
+<br>
+<br>
+3.承認済みドメイン確認
+<br>
+『Authentication』→『設定』→『承認済みドメイン』(開発環境で使用するlocalhostがあるか)
+<br>
+<img width="867" height="556" alt="承認済みドメイン確認" src="https://github.com/user-attachments/assets/c4519ba1-7ca8-45cc-9307-ad9fbbd3556b" />
+<br>
+<br>
+
+### Firebase アプリ登録設定手順
+<br>
+1. コンソール画面の左メニューから『Authentication』→『プロジェクトの設定』をクリック
+<br>
+<img width="700" alt="4 プロジェクト設定ボタン" src="https://github.com/user-attachments/assets/6352720f-3991-48e2-b28d-06d38c21b999" />
+<br>
+<br>
+2. 画像赤枠のwebボタンをクリック
+<br>
+<img width="700" alt="5 webボタン" src="https://github.com/user-attachments/assets/772aa1a2-175d-44af-9179-c47d8a2d8bd4" />
+<br>
+<br>
+3. アプリのニックネームを設定（任意の名前）して、『アプリを登録』をクリック（「Firebase Hosting を設定する」は今回は必要無いのでOFFでOK）
+<br>
+<img width="700" alt="6 ネーム設定" src="https://github.com/user-attachments/assets/37388415-343c-479f-a798-11d66eceb00c" />
+<br>
+<br>
+4. 『<script>タグを使用する』を選択し、『コンソールへ進む』をクリック→Firebase 構成情報が表示されます
+<br>
+<img width="700" alt="7 SDK取得" src="https://github.com/user-attachments/assets/b556c310-5c2e-41c5-b928-b388aeef2987" />
+<br>
+<br>
+5.  .env.localファイルに追記(「プロジェクトの設定」ページから取得できます)
+<br>
+  
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=apikey
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=-authDomain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=projectId
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=storageBucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=messagingSenderId
+NEXT_PUBLIC_FIREBASE_APP_ID=appId
+```
+<br>
+<br>
+
+
+### Firestore Database作成手順
+<br>
+1. Firebaseコンソール → 左メニュー『Firestore Database』
+<br>
+<img width="940" height="555" alt="firestore database" src="https://github.com/user-attachments/assets/eac230dc-2d5e-409b-bf29-6597da5f16dc" />
+<br>
+<br>
+2. 『データベースを作成』
+<br>
+<img width="793" height="465" alt="作成開始" src="https://github.com/user-attachments/assets/b1830af2-aa3e-4267-8ee5-3e7e450c55f8" />
+<br>
+<br>
+3. ロケーションに『asia-northeast1（東京）』を選択→『次へ』
+<br>
+<img width="743" height="434" alt="ロケーション選択" src="https://github.com/user-attachments/assets/8ce668b6-75a5-4230-9f08-534d17053ff7" />
+<br>
+<br>
+4. 『テストモード』を選択→『作成』
+<br>
+<img width="951" height="555" alt="テストモード" src="https://github.com/user-attachments/assets/1367b61b-288c-4c75-bf06-656eb196ff57" />
+<br>
+<br>
+5. 『Firestire Database』→『ルール』
+<br>
+データベースへのアクセス権を設定する→『公開』
+<br>
+<img width="907" height="509" alt="スクリーンショット 2025-07-15 15 08 24" src="https://github.com/user-attachments/assets/f2e6e18a-291f-425d-82e0-a0983485c0a5" />
+<br>
+<br>
+
+```
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+		// anniversaryコレクションは認証ユーザーは読み取り可能、書き込みは制限
+    match /anniversaries/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;  // 必要に応じて管理者権限付与などに変更
+    }
+
+    // writingコレクションは認証ユーザーは読み取り可能、書き込みは制限
+    match /writing/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // readingコレクションも同様
+    match /reading/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    
+    // users コレクション直下のドキュメント
+    match /users/{userId} {
+      
+      // 認証済みかつユーザー本人のみ許可
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // users/{userId}/calendar サブコレクションのドキュメントも同様に本人のみ
+      match /calendar/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      match /achievementByMonth/{yearMonth} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+
+        match /titles/{title} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+    }
+  }
+}
+```
+
+
+### OpenWeatherMap設定手順
+<br>
+1. アカウントを作成する(公式ページ https://home.openweathermap.org/users/sign_up)
+<br>
+<img width="1444" height="866" alt="アカウント登録" src="https://github.com/user-attachments/assets/591de91b-28af-483a-a3f9-a49f3150efc9" />
+<br>
+<br>
+2. 登録したメールアドレスに認証メールが送信されるので『Verify your email』ボタンをクリック
+<br>
+<img width="523" height="564" alt="メール認証" src="https://github.com/user-attachments/assets/5c731474-290b-4285-89dc-44d333f3060e" />
+<br>
+<br>
+3. 上部メニューの「My API keys」をクリックするとAPI keyが表示されます
+<br>
+<img width="1084" height="558" alt="API key取得" src="https://github.com/user-attachments/assets/46c867a6-e110-4d09-87f8-4f5fe822898f" />
+<br>
+<br>
+4. .env.localファイルに追記
+<br>
+
+```
+NEXT_PUBLIC_WEATHER_API_KEY=your_api_key
+```
+
+<br>
+<br>
+
+### データベース登録
+<br>
+1. こちらのスプレッドシートを開く
+<br>
+https://docs.google.com/spreadsheets/d/1SYj040s7bdlVsaMU8tqUeIQQUwRIHSiByHwh9Bwtuno/edit?gid=1954454577#gid=1954454577
+<br>
+<br>
+2. 『拡張機能』→『Apps Script』
+<br>
+<img width="983" height="270" alt="スクリーンショット 2025-07-15 15 20 31" src="https://github.com/user-attachments/assets/bf2b0457-28eb-4630-b93f-a2245d136e84" />
+<br>
+<br>
+3. 表示されるコードの該当部分をFirebaseのプロジェクトIDに変更する
+<br>
+<img width="1091" height="204" alt="スクリーンショット 2025-07-15 15 25 45" src="https://github.com/user-attachments/assets/b952b377-5226-4b51-97d9-c37fdf9f1d6e" />
+<br>
+<br>
+4. プルダウンで表示される関数から、赤枠の3つを一つずつ実行
+<br>
+sendAnniversarySheetを選択→実行→Firestoreに『Anniversary』が作成される(今日の記念日)
+<br>
+sendReadingSheetを選択→実行→Firestoreに『Reading』が作成される(漢字クイズの読みモードの問題集)
+<br>
+sendWritingSheetを選択→実行→Firestoreに『Writing』が作成される(漢字クイズの書きモードの問題集)
+<br>
+<img width="1090" height="262" alt="スクリーンショット 2025-07-15 15 29 41" src="https://github.com/user-attachments/assets/8f61a16d-b7e4-4da1-8d61-da84bb877f82" />
+<br>
+<br>
+## URL
+
+- 開発環境
+  - ログインページ <http://localhost:3000/login>
+
+
