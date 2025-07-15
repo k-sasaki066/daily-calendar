@@ -10,14 +10,14 @@ import { BadgePopup } from "@/components/common/BadgePopup";
 import { checkAndAwardAchievements } from "@/lib/quiz/checkAndAwardAchievements";
 
 type QuizItem = {
-    漢字: string;
-    読み1?: string;
-    読み2?: string;
-    読み3?: string;
-    書き1?: string;
-    書き2?: string;
-    書き3?: string;
-    正解: string;
+    question: string;
+    reading1?: string;
+    reading2?: string;
+    reading3?: string;
+    writing1?: string;
+    writing2?: string;
+    writing3?: string;
+    answer: string;
 };
 
 export default function KanjiQuizPage() {
@@ -102,8 +102,8 @@ export default function KanjiQuizPage() {
         if (!quiz) return;
 
         const choices = mode === "reading"
-        ? [quiz.読み1, quiz.読み2, quiz.読み3, quiz.正解]
-        : [quiz.書き1, quiz.書き2, quiz.書き3, quiz.正解];
+        ? [quiz.reading1, quiz.reading2, quiz.reading3, quiz.answer]
+        : [quiz.writing1, quiz.writing2, quiz.writing3, quiz.answer];
 
         const filtered = choices.filter(Boolean) as string[];
         const shuffled = [...filtered].sort(() => Math.random() - 0.5);
@@ -113,7 +113,7 @@ export default function KanjiQuizPage() {
     const handleAnswer = (choice: string) => {
         setSelected(choice);
         setShowResult(true);
-        if (choice === quiz?.正解) {
+        if (choice === quiz?.answer) {
             setScore((prev) => prev + 1);
         }
     };
@@ -227,7 +227,7 @@ export default function KanjiQuizPage() {
             </p>
 
             <h2 className="text-4xl mb-12">
-                {mode === "reading" ? `${quiz.漢字}` : `${quiz.漢字}`}
+                {mode === "reading" ? `${quiz.question}` : `${quiz.question}`}
             </h2>
 
             <div className="flex flex-col gap-6 items-center mb-6 text-2xl">
@@ -238,7 +238,7 @@ export default function KanjiQuizPage() {
                     disabled={showResult}
                     className={`px-4 py-2 rounded border w-60 ${
                     showResult
-                        ? choice === quiz.正解
+                        ? choice === quiz.answer
                         ? "bg-green-400"
                         : selected === choice
                         ? "bg-red-400"
@@ -253,7 +253,7 @@ export default function KanjiQuizPage() {
 
         {showResult && (
             <div className="mt-8 mb-4 text-3xl">
-            {selected === quiz.正解 ? "⭕️ 正解！" : `❌ 不正解。正解は「${quiz.正解}」`}
+            {selected === quiz.answer ? "⭕️ 正解！" : `❌ 不正解。正解は「${quiz.answer}」`}
             </div>
         )}
 
