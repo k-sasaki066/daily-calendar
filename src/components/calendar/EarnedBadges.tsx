@@ -1,35 +1,57 @@
+"use client";
+
+import { titleToSlug } from "@/lib/utils/titleToSlug";
+
+
 type BadgeInfo = {
     title: string;
 };
 
 type Props = {
-    badges: BadgeInfo[];
+    todayBadges: BadgeInfo[];
+    monthBadges: BadgeInfo[];
 };
 
-const titleToSlug: Record<string, string> = {
-    "漢字マスター": "kanji-master",
-    "計算マスター": "math-master",
-    "時計マスター": "clock-master",
-    "がんばり賞": "streak",
-};
-
-export default function EarnedBadges({ badges }: Props) {
-    if (badges.length === 0) return null;
+export default function EarnedBadges({ todayBadges, monthBadges }: Props) {
+    if (todayBadges.length === 0 && monthBadges.length === 0) return null;
 
     return (
-        <div className="mt-12 text-center">
-            <h3 className="text-3xl font-bold mb-4">🏅 今月の称号</h3>
-            <div className="flex flex-wrap justify-center gap-10">
-                {badges.map((badge, idx) => {
-                    const slug = titleToSlug[badge.title] ?? "default";
-                    return (
-                        <div key={idx} className="flex flex-col items-center border p-4">
-                            <img className="w-18 h-18 object-contain" src={`/badges/${slug}.png`} alt="" />
-                            <p className="mt-2 text-lg font-semibold">{badge.title}</p>
-                        </div>
-                    );
-                })}
-            </div>
+        <div>
+            {todayBadges.length > 0 && (
+                <section className="mt-10 text-center">
+                <h3 className="text-3xl font-bold mb-4"> 今日の称号</h3>
+                <div className="flex flex-wrap justify-center gap-10">
+                    {todayBadges.map((badge, idx) => (
+                    <div key={idx} className="flex flex-col items-center border p-4 w-[180px]">
+                        <img
+                        className="w-26 h-26 object-contain"
+                        src={`/badges/${titleToSlug(badge.title)}.png`}
+                        alt=""
+                        />
+                        <p className="mt-2 text-lg font-semibold">{badge.title}</p>
+                    </div>
+                    ))}
+                </div>
+                </section>
+            )}
+
+            {monthBadges.length > 0 && (
+                <section className="mt-12 text-center">
+                <h3 className="text-3xl font-bold mb-4"> 今月の称号</h3>
+                <div className="flex flex-wrap justify-center gap-10">
+                    {monthBadges.map((badge, idx) => (
+                    <div key={idx} className="flex flex-col items-center border p-4 w-[180px]">
+                        <img
+                        className="w-26 h-26 object-contain"
+                        src={`/badges/${titleToSlug(badge.title)}.png`}
+                        alt=""
+                        />
+                        <p className="mt-2 text-lg font-semibold">{badge.title}</p>
+                    </div>
+                    ))}
+                </div>
+                </section>
+            )}
         </div>
     );
 }

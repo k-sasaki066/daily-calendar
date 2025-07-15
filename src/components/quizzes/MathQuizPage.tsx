@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { handleQuizSubmit } from '@/lib/quiz/handleQuizSubmit';
-import { saveAchievement, isAchievementEarnedToday, check7DayChallenge } from "@/lib/quiz/saveStamp";
 import { useAuth } from '@/context/AuthContext';
 import { BadgePopup } from "@/components/common/BadgePopup";
+import { checkAndAwardAchievements } from "@/lib/quiz/checkAndAwardAchievements";
 
 type Question = {
     text: string;
@@ -189,7 +189,7 @@ export default function MathQuizPage() {
     };
 
     useEffect(() => {
-        if (finished) {
+        if (finished && user) {
             (async () => {
                 try {
                     await handleQuizSubmit({
@@ -197,35 +197,13 @@ export default function MathQuizPage() {
                         correctCount,
                     });
 
-                    const queue: BadgeInfo[] = [];
+                    const queue = await checkAndAwardAchievements({
+                        userId: user.uid,
+                        correctCount,
+                        quizTitle: "計算マスター",
+                        isPerfect: correctCount === TOTAL,
+                    });
 
-                    if (user) {
-                        const isStreak = await check7DayChallenge(user.uid);
-                        const alreadyEarned = await isAchievementEarnedToday(user.uid, "がんばり賞");
-
-                        if (isStreak && !alreadyEarned) {
-                            await saveAchievement(user.uid, "がんばり賞");
-                            queue.push({
-                                title: "がんばり賞",
-                                image: "/badges/streak.png",
-                                message: "7日間連続チャレンジ達成！",
-                            });
-                        }
-                    }
-
-                    if (correctCount === TOTAL && user) {
-                        const alreadyEarnedToday = await isAchievementEarnedToday(user.uid, "計算マスター");
-
-                        if (!alreadyEarnedToday) {
-                            await saveAchievement(user.uid, "計算マスター");
-                            queue.push({
-                                title: "計算マスター",
-                                image: "/badges/math-master.png",
-                                message: "全問正解おめでとうございます！",
-                            });
-                        }
-                    }
-                    
                     if (queue.length > 0) {
                         setBadgeQueue(queue);
                         setCurrentBadge(queue[0]);

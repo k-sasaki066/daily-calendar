@@ -5,8 +5,8 @@ import React, { useState, useEffect } from "react";
 import Clock from "@/components/quizzes/Clock";
 import { handleQuizSubmit } from "@/lib/quiz/handleQuizSubmit";
 import { useAuth } from '@/context/AuthContext';
-import { saveAchievement, isAchievementEarnedToday, check7DayChallenge } from "@/lib/quiz/saveStamp";
 import { BadgePopup } from "@/components/common/BadgePopup";
+import { checkAndAwardAchievements } from "@/lib/quiz/checkAndAwardAchievements";
 
 type Time = { hour: number; minute: number };
 
@@ -43,7 +43,7 @@ export default function QuizPage() {
     };
 
     useEffect(() => {
-        if (quizFinished) {
+        if (quizFinished && user) {
             (async () => {
                 try {
                     await handleQuizSubmit({
@@ -51,40 +51,18 @@ export default function QuizPage() {
                         correctCount,
                     });
 
-                    const queue: BadgeInfo[] = [];
-
-                    if (user) {
-                        const isStreak = await check7DayChallenge(user.uid);
-                        const alreadyEarned = await isAchievementEarnedToday(user.uid, "がんばり賞");
-
-                        if (isStreak && !alreadyEarned) {
-                            await saveAchievement(user.uid, "がんばり賞");
-                            queue.push({
-                                title: "がんばり賞",
-                                image: "/badges/streak.png",
-                                message: "7日間連続チャレンジ達成！",
-                            });
-                        }
-                    }
-
-                    if (correctCount === TOTAL_QUESTIONS && user) {
-                        const alreadyEarnedToday = await isAchievementEarnedToday(user.uid, "時計マスター");
-
-                        if (!alreadyEarnedToday) {
-                            await saveAchievement(user.uid, "時計マスター");
-                            queue.push({
-                                title: "時計マスター",
-                                image: "/badges/clock-master.png",
-                                message: "全問正解おめでとうございます！",
-                            });
-                        }
-                    }
+                    const queue = await checkAndAwardAchievements({
+                        userId: user.uid,
+                        correctCount,
+                        quizTitle: "時計マスター",
+                        isPerfect: correctCount === TOTAL_QUESTIONS,
+                    });
 
                     if (queue.length > 0) {
                         setBadgeQueue(queue);
                         setCurrentBadge(queue[0]);
                     }
-                    
+
                     console.log("結果を保存しました");
                 } catch (error) {
                     console.error("結果の保存に失敗しました", error);
