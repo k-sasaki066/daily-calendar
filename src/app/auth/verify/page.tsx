@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { applyActionCode } from 'firebase/auth';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 
 export default function VerifyEmailPage() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     const hasRun = useRef(false);
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
 

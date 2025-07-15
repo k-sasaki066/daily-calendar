@@ -10,17 +10,17 @@ export type BadgeInfo = {
 };
 
 export async function checkAndAwardAchievements({
-      userId,
-      correctCount,
-      quizTitle, // 例: "漢字マスター"
-      isPerfect,
-  }: {
-      userId: string;
-      correctCount: number;
-      quizTitle: string;
-      isPerfect: boolean;
-  }): Promise<BadgeInfo[]> {
-      const queue: BadgeInfo[] = [];
+    userId,
+    correctCount,
+    quizTitle, // 例: "漢字マスター"
+    isPerfect,
+}: {
+    userId: string;
+    correctCount: number;
+    quizTitle: string;
+    isPerfect: boolean;
+}): Promise<BadgeInfo[]> {
+    const queue: BadgeInfo[] = [];
 
     // 連続チャレンジ称号
     const isStreak = await check7DayChallenge(userId);
@@ -66,7 +66,7 @@ export async function checkAndAwardAchievements({
             queue.push({
                 title,
                 image: `/badges/point-${i * 100}.png`,
-                message: `${i * 100}ポイント達成！おめでとう🎉`,
+                message: `おめでとう!`,
             });
         }
     }
