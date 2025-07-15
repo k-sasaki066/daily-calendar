@@ -96,6 +96,21 @@ export async function saveStamp({
     );
 }
 
+export async function updateTotalPoints(userId: string, addedPoints: number) {
+    const userRef = doc(db, "users", userId);
+    const snap = await getDoc(userRef);
+
+    const current = snap.exists() && typeof snap.data()?.totalPoints === "number"
+        ? snap.data()!.totalPoints
+        : 0;
+
+    const newTotal = current + addedPoints;
+
+    await setDoc(userRef, { totalPoints: newTotal }, { merge: true });
+
+    return newTotal;
+}
+
 // 7日間連続挑戦をチェック
 export async function check7DayChallenge(userId: string): Promise<boolean> {
     const now = new Date();

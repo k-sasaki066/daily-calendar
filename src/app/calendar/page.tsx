@@ -9,8 +9,6 @@ import React, { useState } from "react";
 import StampCalendar from '@/components/calendar/StampCard';
 import EarnedBadges from "@/components/calendar/EarnedBadges";
 
-type StampedDay = { challenges: string[]; correctCount: number };
-
 type BadgeInfo = {
     title: string;
 };
@@ -18,15 +16,23 @@ type BadgeInfo = {
 export default function StampCard() {
     const router = useRouter();
     
-    const today = new Date();
-    const [currentYear, setCurrentYear] = useState(today.getFullYear());
-    const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0〜11
+    const [today, setToday] = useState<Date | null>(null);
+    const [currentYear, setCurrentYear] = useState<number | null>(null);
+    const [currentMonth, setCurrentMonth] = useState<number | null>(null); // 0〜11
 
     const [user, setUser] = useState<User | null>(null);
     const [stampedDaysData, setStampedDaysData] = useState<{ [day: number]: { challenges: string[]; correctCount: number } }>({});
     const [totalPoints, setTotalPoints] = useState(0);
     const [displayedPoints, setDisplayedPoints] = useState(0);
-    const [badges, setBadges] = useState<BadgeInfo[]>([]);
+    const [todayBadges, setTodayBadges] = useState<BadgeInfo[]>([]);
+    const [monthBadges, setMonthBadges] = useState<BadgeInfo[]>([]);
+
+    useEffect(() => {
+        const now = new Date();
+        setToday(now);
+        setCurrentYear(now.getFullYear());
+        setCurrentMonth(now.getMonth());
+    }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(getAuth(), (currentUser) => {
@@ -36,27 +42,42 @@ export default function StampCard() {
     }, []);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || currentYear === null || currentMonth === null || today === null) return;
 
         const fetchBadges = async () => {
             try {
-                const now = new Date();
                 const year = currentYear;
-                const month = String(currentMonth + 1).padStart(2, "0");
-                const basePath = `users/${user.uid}/achievementByMonth/${year}-${month}/titles`;
+                const monthStr = String(currentMonth + 1).padStart(2, "0");
+                const day = today.getDate();
+
+                const basePath = `users/${user.uid}/achievementByMonth/${year}-${monthStr}/titles`;
                 const titlesRef = collection(db, basePath);
 
-                // 今月取得済みの称号のドキュメント一覧を取得
                 const snap = await getDocs(query(titlesRef, orderBy("earnedAt", "asc")));
 
-                const fetchedBadges: BadgeInfo[] = [];
+                const todayList: BadgeInfo[] = [];
+                const monthList: BadgeInfo[] = [];
 
                 for (const docSnap of snap.docs) {
-                    const titleId = docSnap.id;
-                    fetchedBadges.push({ title: titleId });
+                    const title = docSnap.id;
+                    const earnedAtRaw = docSnap.data()?.earnedAt;
+                    const earnedAt = earnedAtRaw?.toDate?.() ?? new Date(earnedAtRaw);
+
+                    const badge: BadgeInfo = { title };
+
+                    if (
+                        earnedAt.getFullYear() === today.getFullYear() &&
+                        earnedAt.getMonth() === today.getMonth() &&
+                        earnedAt.getDate() === day
+                    ) {
+                        todayList.push(badge);
+                    } else {
+                        monthList.push(badge);
+                    }
                 }
 
-                setBadges(fetchedBadges);
+                setTodayBadges(todayList);
+                setMonthBadges(monthList);
             } catch (error) {
                 console.error("称号の取得に失敗しました:", error);
             }
@@ -70,14 +91,16 @@ export default function StampCard() {
                 if (snap.exists()) {
                     const data = snap.data();
                     setStampedDaysData(data.stampedDays || {});
-                    // 合計ポイント（正解数の合計）を計算
-                    const stampedDaysObj = data.stampedDays as Record<string, StampedDay> | undefined;
-                    const total = Object.values(stampedDaysObj ?? {}).reduce((sum, day) => sum + (day.correctCount ?? 0), 0);
-                    setTotalPoints(total);
                 } else {
                     setStampedDaysData({});
-                    setTotalPoints(0);
                 }
+
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                const total = userSnap.exists() && typeof userSnap.data()?.totalPoints === "number"
+                    ? userSnap.data()!.totalPoints
+                    : 0;
+                setTotalPoints(total);
             } catch (error) {
                 console.error("Firestore 読み込みエラー:", error);
                 router.push("/error");
@@ -118,6 +141,10 @@ export default function StampCard() {
         return () => cancelAnimationFrame(frameId);
     }, [totalPoints]);
 
+    if (today === null || currentYear === null || currentMonth === null) {
+        // 日付情報がまだセットされていなければ何も表示しない
+        return null;
+    }
 
     const stampedDays = Object.keys(stampedDaysData).map((d) => Number(d));
 
@@ -139,18 +166,18 @@ export default function StampCard() {
     const prevMonth = () => {
         if (currentMonth === 0) {
         setCurrentMonth(11);
-        setCurrentYear((y) => y - 1);
+        setCurrentYear((y) => (y !== null ? y - 1 : null));
         } else {
-        setCurrentMonth((m) => m - 1);
+        setCurrentMonth((m) => (m !== null ? m - 1 : null));
         }
     };
 
     const nextMonth = () => {
         if (currentMonth === 11) {
         setCurrentMonth(0);
-        setCurrentYear((y) => y + 1);
+        setCurrentYear((y) => (y !== null ? y + 1 : null));
         } else {
-        setCurrentMonth((m) => m + 1);
+        setCurrentMonth((m) => (m !== null ? m + 1 : null));
         }
     };
 
@@ -195,7 +222,7 @@ export default function StampCard() {
                 <span className="text-2xl font-medium">ポイント</span>
             </div>
         </div>
-        <EarnedBadges badges={badges} />
+        <EarnedBadges todayBadges={todayBadges} monthBadges={monthBadges} />
     </div>
     );
 }

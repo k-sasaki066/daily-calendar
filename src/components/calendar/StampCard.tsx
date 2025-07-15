@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 
 type Props = {
@@ -54,7 +56,9 @@ export default function StampCalendar({
         ...Array(daysInMonth).fill(0).map((_, i) => i + 1),
     ];
 
-    const weekdays = ["日","月", "火", "水", "木", "金", "土"];
+    const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+    
+    if (!today) return null;
 
     return (
         <div className="space-y-2">
