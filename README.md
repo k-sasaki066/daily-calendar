@@ -92,6 +92,11 @@
 |<img width="500" height="503" alt="カレンダー例" src="https://github.com/user-attachments/assets/29f5784a-7416-4258-ba08-199ccd1e8672" />|<img width="500" height="567" alt="カレンダー例2" src="https://github.com/user-attachments/assets/f5135a24-6ef7-4d56-9495-c04c265b01e3" />|
 |ヘッダーメニューのカレンダーをクリックするとカレンダー画面に遷移します。<br>今月のカレンダーが表示され、両脇のボタンで前月と翌月を切り替えられます。<br>その日に1回でもクイズに挑戦できたらスタンプが表示されます。このスタンプは月毎に変わります。<br>すべてのクイズに挑戦できた場合は特別スタンプになります。<br>合計正解数がアニメーション付きで表示されます。|カレンダーの下に称号が表示されます。その日に獲得した称号とその月に獲得した称号を分けて表示しています。<br>7日間連続で挑戦できた場合は頑張り賞がもらえます。|
 
+
+## Firestore構成図
+<img width="641" height="535" alt="firestore構成図" src="https://github.com/user-attachments/assets/84ec483a-8afe-4f37-99f8-793f3152fab9" />
+
+
 ## 実行環境
 | 技術      | 説明                           |
 |----------------|--------------------------------|
@@ -312,7 +317,7 @@ touch .env.local
   
 ```
 NEXT_PUBLIC_FIREBASE_API_KEY=apikey
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=-authDomain
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=authDomain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=projectId
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=storageBucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=messagingSenderId
@@ -346,7 +351,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=appId
 <br>
 5. 『Firestire Database』→『ルール』
 <br>
-データベースへのアクセス権を設定する→『公開』
+デフォルトのコードを削除し、下記のコードを貼り付けてデータベースへのアクセス権を設定する→『公開』
 <br>
 <img width="907" height="509" alt="スクリーンショット 2025-07-15 15 08 24" src="https://github.com/user-attachments/assets/f2e6e18a-291f-425d-82e0-a0983485c0a5" />
 <br>
@@ -448,15 +453,30 @@ https://docs.google.com/spreadsheets/d/1SYj040s7bdlVsaMU8tqUeIQQUwRIHSiByHwh9Bwt
 <br>
 4. プルダウンで表示される関数から、赤枠の3つを一つずつ実行
 <br>
-sendAnniversarySheetを選択→実行→Firestoreに『Anniversary』が作成される(今日の記念日)
+sendAnniversarySheetを選択 → 「▶︎ 実行」→ Firestoreに『Anniversary』が作成される(今日の記念日)
 <br>
-sendReadingSheetを選択→実行→Firestoreに『Reading』が作成される(漢字クイズの読みモードの問題集)
+sendReadingSheetを選択 →「▶︎ 実行」→ Firestoreに『Reading』が作成される(漢字クイズの読みモードの問題集)
 <br>
-sendWritingSheetを選択→実行→Firestoreに『Writing』が作成される(漢字クイズの書きモードの問題集)
+sendWritingSheetを選択 →「▶︎ 実行」→ Firestoreに『Writing』が作成される(漢字クイズの書きモードの問題集)
 <br>
 <img width="1090" height="262" alt="スクリーンショット 2025-07-15 15 29 41" src="https://github.com/user-attachments/assets/8f61a16d-b7e4-4da1-8d61-da84bb877f82" />
 <br>
 <br>
+※Googleアカウントのアクセス許可について
+<br>
+このスプレッドシートには Google Apps Script が連携されており、初回利用時に Google アカウントのアクセス許可が必要です
+<br>
+<br>
+
+許可内容：
+  - スプレッドシートの読み取り
+  - Firestore など外部サービスへのデータ送信
+
+<br>
+「このアプリはGoogleアカウントへのアクセスをリクエストしています」という画面が表示→「詳細を表示」→「ページに移動」→Googleアカウントを選択し、権限を付与する
+<br>
+<br>
+
 ## URL
 
 - 開発環境
